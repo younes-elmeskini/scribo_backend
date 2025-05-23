@@ -12,3 +12,113 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  OWNER
+  MEMBER
+  VISTOR
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum Mode {
+  DARK
+  LIGHT
+}
+
+model User {
+  userId    String   @id @default(cuid())
+  userName  String?
+  email     String?  @unique
+  password  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  clientId   String   @id @default(cuid())
+  clientName String?
+  email      String?  @unique
+  password   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Team       Team[]
+}
+
+model Team {
+  teamId     String   @id @default(cuid())
+  teamName   String
+  clientId   String
+  compagneId String
+  role       Role
+  compagne   Compagne @relation(fields: [compagneId], references: [compagneId])
+  client     Client   @relation(fields: [clientId], references: [clientId])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Compagne {
+  compagneId   String       @id @default(cuid())
+  compagneName String
+  status       String
+  favrite      Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  Form         Form[]
+  Team         Team[]
+  soumission   soumission[]
+}
+
+model fields {
+  fieldId   String      @id @default(cuid())
+  feldName  String
+  type      String
+  FormField FormField[]
+}
+
+model Form {
+  formId        String      @id @default(cuid())
+  title         String?
+  Description   String?
+  coverColor    String
+  coverImage    String
+  mode          Mode
+  messageSucces String
+  compagneId    String
+  compagne      Compagne    @relation(fields: [compagneId], references: [compagneId])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  FormField     FormField[]
+}
+
+model FormField {
+  formFieldId String   @id @default(cuid())
+  formId      String
+  fieldId     String
+  form        Form     @relation(fields: [formId], references: [formId])
+  fields      fields   @relation(fields: [fieldId], references: [fieldId])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  answer      answer[]
+}
+
+model soumission {
+  soumissionId String   @id @default(cuid())
+  compagneId   String
+  compagne     Compagne @relation(fields: [compagneId], references: [compagneId])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  answer       answer[]
+}
+
+model answer {
+  answerId     String     @id @default(cuid())
+  valeu        String
+  formFieldId  String
+  fromField    FormField  @relation(fields: [formFieldId], references: [formFieldId])
+  soumissionId String
+  soumission   soumission @relation(fields: [soumissionId], references: [soumissionId])
+}
