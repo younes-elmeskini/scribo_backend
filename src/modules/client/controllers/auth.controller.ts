@@ -55,24 +55,24 @@ export default class AuthController {
         return;
       }
       const parsedData: LoginUserInput = Validation.loginSchema.parse(req.body);
-      const teacher = await prisma.client.findUnique({
+      const client = await prisma.client.findUnique({
         where: { email: parsedData.email },
       });
 
-      if (!teacher) {
+      if (!client) {
         res.status(404).json({ message: "Invalid email" });
         return;
       }
 
       const isPasswordValid: boolean = await argon2.verify(
-        teacher.password!,
+        client.password!,
         parsedData.password
       );
       if (!isPasswordValid) {
         res.status(401).json({ message: "Invalid credentials" });
         return;
       }
-      const token = generateToken(teacher);
+      const token = generateToken(client);
       if (!token) {
         res.status(401).json({ message: "Invalid credentials" });
         return;
@@ -85,10 +85,6 @@ export default class AuthController {
       });
       res.status(200).json({
         message: "Login successful",
-        user: {
-          userId: teacher.clientId,
-          email: teacher.email,
-        },
       });
     } catch (error) {
       console.error("Login error:", error);
