@@ -11,7 +11,7 @@ export const generateToken = (client: Client) => {
   }
   const token = jwt.sign(
     {
-      studentId: client.clientId,
+      clientId: client.clientId,
     },
     process.env.JWT_SECRET,
     { expiresIn: "1d" }
