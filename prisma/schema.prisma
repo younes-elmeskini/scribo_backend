@@ -30,31 +30,30 @@ enum Mode {
 }
 
 model User {
-  userId    String   @id @default(cuid())
-  firstName String
-  lastName String
-  email     String  @unique
-  password  String
+  userId      String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  password    String
   profilImage String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Client {
-  clientId   String   @id @default(cuid())
-  firstName String
-  lastName String
-  email      String  @unique
-  password   String
+  clientId    String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  password    String
   profilImage String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  Team       Team[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Team        Team[]
 }
 
 model Team {
   teamId     String   @id @default(cuid())
-  teamName   String
   clientId   String
   compagneId String
   role       Role
@@ -65,15 +64,16 @@ model Team {
 }
 
 model Compagne {
-  compagneId   String       @id @default(cuid())
-  compagneName String
-  status       String
-  favrite      Boolean      @default(false)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  Form         Form[]
-  Team         Team[]
-  soumission   soumission[]
+  compagneId     String       @id @default(cuid())
+  compagneName   String
+  status         Status       @default(ACTIVE)
+  favrite        Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  desactivatedAt DateTime?
+  Form           Form[]
+  Team           Team[]
+  soumission     soumission[]
 }
 
 model fields {
