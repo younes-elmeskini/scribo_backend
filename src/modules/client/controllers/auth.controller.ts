@@ -4,24 +4,24 @@ import { z } from "zod";
 import * as argon2 from "argon2";
 import { Client } from "@prisma/client";
 import { generateToken } from "../middleware/auth";
-import Validation from "../utils/validation/auth";
+import AuthValidation from "../utils/validation/auth";
 
-type CreateUserInput = z.infer<typeof Validation.createUserSchema>;
+type CreateUserInput = z.infer<typeof AuthValidation.createUserSchema>;
 
-type LoginUserInput = z.infer<typeof Validation.loginSchema>;
+type LoginUserInput = z.infer<typeof AuthValidation.loginSchema>;
 
 
 export default class AuthController {
   static async createUser(req: Request, res: Response): Promise<void> {
     try {
-      const validationResult = Validation.createUserSchema.safeParse(req.body);
+      const validationResult = AuthValidation.createUserSchema.safeParse(req.body);
       if (!validationResult.success) {
         const firstError =
           validationResult.error.errors[0]?.message || "Validation error.";
         res.status(400).json({ message: firstError });
         return;
       }
-      const parsedData: CreateUserInput = Validation.createUserSchema.parse(
+      const parsedData: CreateUserInput = AuthValidation.createUserSchema.parse(
         req.body
       );
       const clientExists = await prisma.client.findUnique({
@@ -47,14 +47,14 @@ export default class AuthController {
   }
   static async login(req: Request, res: Response): Promise<void> {
     try {
-      const validationResult = Validation.loginSchema.safeParse(req.body);
+      const validationResult = AuthValidation.loginSchema.safeParse(req.body);
       if (!validationResult.success) {
         const firstError =
           validationResult.error.errors[0]?.message || "Validation error.";
         res.status(400).json({ message: firstError });
         return;
       }
-      const parsedData: LoginUserInput = Validation.loginSchema.parse(req.body);
+      const parsedData: LoginUserInput = AuthValidation.loginSchema.parse(req.body);
       const client = await prisma.client.findUnique({
         where: { email: parsedData.email },
       });
@@ -93,13 +93,13 @@ export default class AuthController {
   }
   static async clientData(req: Request, res: Response): Promise<void> {
     try {
-      const clientid = req.client?.clientId;
-      if (!clientid) {
+      const clientId = req.client?.clientId;
+      if (!clientId) {
         res.status(401).json({ message: "Unauthorized" });
         return;
       }
       const client = await prisma.client.findUnique({
-        where: { clientId: clientid.toString() },
+        where: { clientId: clientId.toString() },
         select: {
           clientId: true,
           firstName: true,

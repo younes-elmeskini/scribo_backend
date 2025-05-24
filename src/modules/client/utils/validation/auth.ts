@@ -1,5 +1,5 @@
 import { z } from "zod";
-export default class Validation {
+export default class AuthValidation {
   static createUserSchema = z.object({
     lastName: z
       .string()
