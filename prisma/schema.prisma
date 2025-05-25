@@ -41,15 +41,15 @@ model User {
 }
 
 model Client {
-  clientId    String   @id @default(cuid())
-  firstName   String
-  lastName    String
-  email       String   @unique
-  password    String
+  clientId  String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String   @unique
+  password  String
   profilImage String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  Team        Team[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Team      Team[]
 }
 
 model Team {
@@ -70,7 +70,6 @@ model Compagne {
   favrite        Boolean      @default(false)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  desactivatedAt DateTime?
   Form           Form[]
   Team           Team[]
   soumission     soumission[]
@@ -95,6 +94,7 @@ model Form {
   compagne      Compagne    @relation(fields: [compagneId], references: [compagneId])
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  desactivatedAt DateTime?
   FormField     FormField[]
 }
 
