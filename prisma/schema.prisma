@@ -41,15 +41,15 @@ model User {
 }
 
 model Client {
-  clientId  String   @id @default(cuid())
-  firstName String
-  lastName  String
-  email     String   @unique
-  password  String
+  clientId    String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  password    String
   profilImage String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Team      Team[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Team        Team[]
 }
 
 model Team {
@@ -64,49 +64,58 @@ model Team {
 }
 
 model Compagne {
-  compagneId     String       @id @default(cuid())
-  compagneName   String
-  status         Status       @default(ACTIVE)
-  favrite        Boolean      @default(false)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  Form           Form[]
-  Team           Team[]
-  soumission     soumission[]
+  compagneId   String       @id @default(cuid())
+  compagneName String
+  status       Status       @default(ACTIVE)
+  favrite      Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  Form         Form[]
+  Team         Team[]
+  soumission   soumission[]
+  answer       answer[]
 }
 
 model fields {
   fieldId   String      @id @default(cuid())
-  fieldName  String
+  icon      String
+  fieldName String
   type      String
   FormField FormField[]
 }
 
 model Form {
-  formId        String      @id @default(cuid())
-  title         String?
-  Description   String?
-  coverColor    String
-  coverImage    String
-  mode          Mode
-  messageSucces String
-  compagneId    String
-  compagne      Compagne    @relation(fields: [compagneId], references: [compagneId])
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  formId         String      @id @default(cuid())
+  title          String?
+  Description    String?
+  coverColor     String
+  coverImage     String
+  mode           Mode
+  messageSucces  String
+  compagneId     String
+  compagne       Compagne    @relation(fields: [compagneId], references: [compagneId])
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
   desactivatedAt DateTime?
-  FormField     FormField[]
+  FormField      FormField[]
 }
 
 model FormField {
   formFieldId String   @id @default(cuid())
   formId      String
   fieldId     String
+  label       String?
+  requird     Boolean?
+  disable     Boolean  @default(false)
+  style       String[] @default(["null"])
+  message     String?
+  ordre       Int
+  placeholdre String?
+  options     String[] @default(["null"])
   form        Form     @relation(fields: [formId], references: [formId])
   fields      fields   @relation(fields: [fieldId], references: [fieldId])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  answer      answer[]
 }
 
 model soumission {
@@ -121,8 +130,8 @@ model soumission {
 model answer {
   answerId     String     @id @default(cuid())
   valeu        String
-  formFieldId  String
-  fromField    FormField  @relation(fields: [formFieldId], references: [formFieldId])
+  compagneId   String
+  compagne     Compagne   @relation(fields: [compagneId], references: [compagneId])
   soumissionId String
   soumission   soumission @relation(fields: [soumissionId], references: [soumissionId])
 }
