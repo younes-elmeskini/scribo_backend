@@ -77,7 +77,7 @@ model Compagne {
 
 model fields {
   fieldId   String      @id @default(cuid())
-  feldName  String
+  fieldName  String
   type      String
   FormField FormField[]
 }
