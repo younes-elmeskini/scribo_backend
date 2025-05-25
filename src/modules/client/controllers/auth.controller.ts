@@ -5,22 +5,17 @@ import * as argon2 from "argon2";
 import { Client } from "@prisma/client";
 import { generateToken } from "../middleware/auth";
 import AuthValidation from "../utils/validation/auth";
+import { validationResult } from "../../../utils/validation/validationResult";
+
 
 type CreateUserInput = z.infer<typeof AuthValidation.createUserSchema>;
 
 type LoginUserInput = z.infer<typeof AuthValidation.loginSchema>;
 
-
 export default class AuthController {
   static async createUser(req: Request, res: Response): Promise<void> {
     try {
-      const validationResult = AuthValidation.createUserSchema.safeParse(req.body);
-      if (!validationResult.success) {
-        const firstError =
-          validationResult.error.errors[0]?.message || "Validation error.";
-        res.status(400).json({ message: firstError });
-        return;
-      }
+      validationResult(AuthValidation.createUserSchema, req, res);
       const parsedData: CreateUserInput = AuthValidation.createUserSchema.parse(
         req.body
       );
@@ -35,7 +30,7 @@ export default class AuthController {
       const client: Client = await prisma.client.create({
         data: {
           firstName: parsedData.firstName,
-          lastName:parsedData.lastName,
+          lastName: parsedData.lastName,
           email: parsedData.email,
           password: hashedPassword,
         },
@@ -47,14 +42,10 @@ export default class AuthController {
   }
   static async login(req: Request, res: Response): Promise<void> {
     try {
-      const validationResult = AuthValidation.loginSchema.safeParse(req.body);
-      if (!validationResult.success) {
-        const firstError =
-          validationResult.error.errors[0]?.message || "Validation error.";
-        res.status(400).json({ message: firstError });
-        return;
-      }
-      const parsedData: LoginUserInput = AuthValidation.loginSchema.parse(req.body);
+      validationResult(AuthValidation.loginSchema, req, res); 
+      const parsedData: LoginUserInput = AuthValidation.loginSchema.parse(
+        req.body
+      );
       const client = await prisma.client.findUnique({
         where: { email: parsedData.email },
       });
