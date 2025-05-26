@@ -11,10 +11,9 @@ async function main() {
 
   for (const field of fields) {
     await prisma.fields.upsert({
-      where: { id: field.id || field.fieldName },
+      where: {  fieldName: field.fieldName },
       update: {},
       create: {
-        id: field.id || field.fieldName, // Use fieldName as id if id is not provided
         icon: field.icon,
         fieldName: field.fieldName,
         type: field.type

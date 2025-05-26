@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "start": "node dist/server.js",
     "seed": "ts-node prisma/seed.ts",
+    "delete:data": "ts-node prisma/deleteAll.ts",
     "build": "tsc"
   },
   "keywords": [],
