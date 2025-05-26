@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { Client } from "@prisma/client";
 
 export interface ClientJwtPayload {
-  clientId: String;
+  id: String;
 }
 export const generateToken = (client: Client) => {
   if (!process.env.JWT_SECRET) {
@@ -11,7 +11,7 @@ export const generateToken = (client: Client) => {
   }
   const token = jwt.sign(
     {
-      clientId: client.clientId,
+      id: client.id,
     },
     process.env.JWT_SECRET,
     { expiresIn: "1d" }

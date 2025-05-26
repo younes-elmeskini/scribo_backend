@@ -84,15 +84,15 @@ export default class AuthController {
   }
   static async clientData(req: Request, res: Response): Promise<void> {
     try {
-      const clientId = req.client?.clientId;
+      const clientId = req.client?.id;
       if (!clientId) {
         res.status(401).json({ message: "Unauthorized" });
         return;
       }
       const client = await prisma.client.findUnique({
-        where: { clientId: clientId.toString() },
+        where: { id: clientId.toString() },
         select: {
-          clientId: true,
+          id: true,
           firstName: true,
           lastName: true,
           email: true,
