@@ -93,7 +93,7 @@ model Compagne {
 model fields {
   id        String      @id @default(cuid())
   icon      String
-  fieldName String
+  fieldName String   @unique
   type      String
   FormField FormField[]
 }
