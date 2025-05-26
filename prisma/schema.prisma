@@ -14,7 +14,6 @@ datasource db {
 }
 
 enum Role {
-  OWNER
   MEMBER
   VISTOR
 }
@@ -30,7 +29,7 @@ enum Mode {
 }
 
 model User {
-  userId      String   @id @default(cuid())
+  id          String   @id @default(cuid())
   firstName   String
   lastName    String
   email       String   @unique
@@ -41,43 +40,58 @@ model User {
 }
 
 model Client {
-  clientId    String   @id @default(cuid())
+  id          String       @id @default(cuid())
   firstName   String
   lastName    String
-  email       String   @unique
+  email       String       @unique
   password    String
   profilImage String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  Team        Team[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  ownedTeams  TeamMenber[] @relation("OwnerRelation")
+  memberTeams TeamMenber[] @relation("MemberRelation")
+  Compagne    Compagne[]
 }
 
-model Team {
-  teamId     String   @id @default(cuid())
-  clientId   String
-  compagneId String
-  role       Role
-  compagne   Compagne @relation(fields: [compagneId], references: [compagneId])
-  client     Client   @relation(fields: [clientId], references: [clientId])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model TeamMenber {
+  id           String         @id @default(cuid())
+  owenrId      String
+  membreId     String
+  owner        Client         @relation("OwnerRelation", fields: [owenrId], references: [id])
+  member       Client         @relation("MemberRelation", fields: [membreId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  clientId     String?
+  TeamCompagne TeamCompagne[]
+}
+
+model TeamCompagne {
+  id           String     @id @default(cuid())
+  teamMenbreId String
+  compagneId   String
+  role         Role
+  teammeber    TeamMenber @relation(fields: [teamMenbreId], references: [id])
+  compagne     Compagne   @relation(fields: [compagneId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model Compagne {
-  compagneId   String       @id @default(cuid())
+  id           String         @id @default(cuid())
   compagneName String
-  status       Status       @default(ACTIVE)
-  favrite      Boolean      @default(false)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  status       Status         @default(ACTIVE)
+  favrite      Boolean        @default(false)
+  clientId     String
+  client       Client         @relation(fields: [clientId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   Form         Form[]
-  Team         Team[]
+  TeamCompagne TeamCompagne[]
   soumission   soumission[]
-  answer       answer[]
 }
 
 model fields {
-  fieldId   String      @id @default(cuid())
+  id        String      @id @default(cuid())
   icon      String
   fieldName String
   type      String
@@ -85,7 +99,7 @@ model fields {
 }
 
 model Form {
-  formId         String      @id @default(cuid())
+  id             String      @id @default(cuid())
   title          String?
   Description    String?
   coverColor     String
@@ -93,7 +107,7 @@ model Form {
   mode           Mode
   messageSucces  String
   compagneId     String
-  compagne       Compagne    @relation(fields: [compagneId], references: [compagneId])
+  compagne       Compagne    @relation(fields: [compagneId], references: [id])
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   desactivatedAt DateTime?
@@ -101,37 +115,35 @@ model Form {
 }
 
 model FormField {
-  formFieldId String   @id @default(cuid())
+  id          String   @id @default(cuid())
   formId      String
   fieldId     String
   label       String?
   requird     Boolean?
   disable     Boolean  @default(false)
-  style       String[] @default(["null"])
+  style       String[] @default([])
   message     String?
   ordre       Int
   placeholdre String?
-  options     String[] @default(["null"])
-  form        Form     @relation(fields: [formId], references: [formId])
-  fields      fields   @relation(fields: [fieldId], references: [fieldId])
+  options     String[] @default([])
+  form        Form     @relation(fields: [formId], references: [id])
+  fields      fields   @relation(fields: [fieldId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model soumission {
-  soumissionId String   @id @default(cuid())
-  compagneId   String
-  compagne     Compagne @relation(fields: [compagneId], references: [compagneId])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  answer       answer[]
+  id         String   @id @default(cuid())
+  compagneId String
+  compagne   Compagne @relation(fields: [compagneId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  answer     answer[]
 }
 
 model answer {
-  answerId     String     @id @default(cuid())
+  id           String     @id @default(cuid())
   valeu        String
-  compagneId   String
-  compagne     Compagne   @relation(fields: [compagneId], references: [compagneId])
   soumissionId String
-  soumission   soumission @relation(fields: [soumissionId], references: [soumissionId])
+  soumission   soumission @relation(fields: [soumissionId], references: [id])
 }
