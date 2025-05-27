@@ -18,6 +18,17 @@ export default class CompagneController {
         res.status(400).json({ message: "Unauthorized" });
         return;
       }
+      const fields =  await prisma.fields.findMany({
+        where: {
+          id: {
+            in: parsedData.fields,
+          },
+        },
+      });
+      if (fields.length !== parsedData.fields.length) {
+        res.status(400).json({ message: "Invalid fields" });
+        return;
+      }
       const compagne = await prisma.compagne.create({
         data: {
           compagneName: parsedData.compagneName,
@@ -48,7 +59,7 @@ export default class CompagneController {
         res.status(400).json({ message: "Form fields not created" });
         return;
       }
-      res.status(201).json({message: "Compagne created successfully" });
+      res.status(201).json({ message: "Compagne created successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
@@ -82,12 +93,24 @@ static async getAllCompagne(req: Request, res: Response): Promise<void> {
       select: {
         compagneName: true,
         soumission: true,
+        Call: true,
+        Email: true,
+        Notes: true,
+        Task: true,
+        appointment: true,
       },
     });
 
     const formattedResult = campagnes.map((campagne) => ({
       compagneName: campagne.compagneName,
-      totalSoumission: campagne.soumission.length,
+      soumission: campagne.soumission.length,
+      actions:
+        campagne.soumission.length +
+        campagne.Call.length +
+        campagne.Email.length +
+        campagne.Notes.length +
+        campagne.Task.length +
+        campagne.appointment.length,
     }));
 
     res.status(200).json(formattedResult);
