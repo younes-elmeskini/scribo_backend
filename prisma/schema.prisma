@@ -55,7 +55,7 @@ model Client {
   Email       Email[]
   Notes       Notes[]
   Task        Task[]
-  appointment appointment[]
+  appointment Appointment[]
 }
 
 model TeamMenber {
@@ -97,7 +97,7 @@ model Compagne {
   Email        Email[]
   Notes        Notes[]
   Task         Task[]
-  appointment  appointment[]
+  appointment  Appointment[]
 }
 
 model Fields {
@@ -154,7 +154,7 @@ model Soumission {
   Email       Email[]
   Notes       Notes[]
   Task        Task[]
-  appointment appointment[]
+  appointment Appointment[]
 }
 
 model Answer {
@@ -218,7 +218,7 @@ model Task {
   updatedAt    DateTime   @updatedAt
 }
 
-model appointment {
+model Appointment {
   id           String     @id @default(cuid())
   date         DateTime
   compagneId   String
