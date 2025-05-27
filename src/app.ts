@@ -36,11 +36,11 @@ const limiter = rateLimit({
 app.use(limiter);
 // Routes
 import authRoutes from "./modules/client/routes/auth.route";
-// import adminRoutes from "./modules/admin/routes/auth.route";
+import adminRoutes from "./modules/admin/routes/compagne.route";
 // import publicRoutes from "./modules/public/routes/form.route";
 
 app.use("/client/auth", authRoutes);
-// app.use("/api/admin", adminRoutes);
+app.use("/admin", adminRoutes);
 // app.use("/api/public", publicRoutes);
 
 
