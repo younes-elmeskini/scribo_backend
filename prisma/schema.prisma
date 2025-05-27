@@ -40,17 +40,22 @@ model User {
 }
 
 model Client {
-  id          String       @id @default(cuid())
+  id          String        @id @default(cuid())
   firstName   String
   lastName    String
-  email       String       @unique
+  email       String        @unique
   password    String
   profilImage String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  ownedTeams  TeamMenber[] @relation("OwnerRelation")
-  memberTeams TeamMenber[] @relation("MemberRelation")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  ownedTeams  TeamMenber[]  @relation("OwnerRelation")
+  memberTeams TeamMenber[]  @relation("MemberRelation")
   Compagne    Compagne[]
+  Call        Call[]
+  Email       Email[]
+  Notes       Notes[]
+  Task        Task[]
+  appointment appointment[]
 }
 
 model TeamMenber {
@@ -70,7 +75,7 @@ model TeamCompagne {
   teamMenbreId String
   compagneId   String
   role         Role
-  teamMember    TeamMenber @relation(fields: [teamMenbreId], references: [id])
+  teamMember   TeamMenber @relation(fields: [teamMenbreId], references: [id])
   compagne     Compagne   @relation(fields: [compagneId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -87,10 +92,15 @@ model Compagne {
   updatedAt    DateTime       @updatedAt
   Form         Form[]
   TeamCompagne TeamCompagne[]
-  soumission   soumission[]
+  soumission   Soumission[]
+  Call         Call[]
+  Email        Email[]
+  Notes        Notes[]
+  Task         Task[]
+  appointment  appointment[]
 }
 
-model fields {
+model Fields {
   id        String      @id @default(cuid())
   icon      String
   fieldName String      @unique
@@ -127,23 +137,96 @@ model FormField {
   placeholdre String?
   options     String[] @default([])
   form        Form     @relation(fields: [formId], references: [id])
-  fields      fields   @relation(fields: [fieldId], references: [id])
+  fields      Fields   @relation(fields: [fieldId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  Answer      Answer[]
 }
 
-model soumission {
-  id         String   @id @default(cuid())
-  compagneId String
-  compagne   Compagne @relation(fields: [compagneId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  answer     answer[]
+model Soumission {
+  id          String        @id @default(cuid())
+  compagneId  String
+  compagne    Compagne      @relation(fields: [compagneId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  answer      Answer[]
+  Call        Call[]
+  Email       Email[]
+  Notes       Notes[]
+  Task        Task[]
+  appointment appointment[]
 }
 
-model answer {
+model Answer {
   id           String     @id @default(cuid())
   valeu        String
+  formFieldId  String
+  formField    FormField  @relation(fields: [formFieldId], references: [id])
   soumissionId String
-  soumission   soumission @relation(fields: [soumissionId], references: [id])
+  soumission   Soumission @relation(fields: [soumissionId], references: [id])
+}
+
+model Call {
+  id           String     @id @default(cuid())
+  call         String
+  compagneId   String
+  compagne     Compagne   @relation(fields: [compagneId], references: [id])
+  clientId     String
+  client       Client     @relation(fields: [clientId], references: [id])
+  soumissionId String
+  soumission   Soumission @relation(fields: [soumissionId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Email {
+  id           String     @id @default(cuid())
+  email        String
+  compagneId   String
+  compagne     Compagne   @relation(fields: [compagneId], references: [id])
+  clientId     String
+  client       Client     @relation(fields: [clientId], references: [id])
+  soumissionId String
+  soumission   Soumission @relation(fields: [soumissionId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Notes {
+  id           String     @id @default(cuid())
+  notes        String
+  compagneId   String
+  compagne     Compagne   @relation(fields: [compagneId], references: [id])
+  clientId     String
+  client       Client     @relation(fields: [clientId], references: [id])
+  soumissionId String
+  soumission   Soumission @relation(fields: [soumissionId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Task {
+  id           String     @id @default(cuid())
+  task         String
+  compagneId   String
+  compagne     Compagne   @relation(fields: [compagneId], references: [id])
+  clientId     String
+  client       Client     @relation(fields: [clientId], references: [id])
+  soumissionId String
+  soumission   Soumission @relation(fields: [soumissionId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model appointment {
+  id           String     @id @default(cuid())
+  date         DateTime
+  compagneId   String
+  compagne     Compagne   @relation(fields: [compagneId], references: [id])
+  clientId     String
+  client       Client     @relation(fields: [clientId], references: [id])
+  soumissionId String
+  soumission   Soumission @relation(fields: [soumissionId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
