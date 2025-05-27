@@ -1,13 +1,11 @@
 import express from "express";
 import AuthController from "../controllers/auth.controller";
-import CompagneController from "../controllers/compagne.controller"
 import {authenticate} from "../middleware/auth";
 
 const router = express.Router();
 
 router.post("/register", AuthController.createUser);
 router.post("/login", AuthController.login);
-router.post("/",authenticate,CompagneController.createCompagne)
 router.get("/me", authenticate, AuthController.clientData);
 router.post("/logout", AuthController.logout);
 

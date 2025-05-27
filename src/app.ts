@@ -35,13 +35,10 @@ const limiter = rateLimit({
 
 app.use(limiter);
 // Routes
-import authRoutes from "./modules/client/routes/auth.route";
-import adminRoutes from "./modules/admin/routes/compagne.route";
-// import publicRoutes from "./modules/public/routes/form.route";
+import authClient from "./modules/client/routes/auth.route";
+import compagneClient from "./modules/client/routes/compagne.route";
 
-app.use("/client/auth", authRoutes);
-app.use("/admin", adminRoutes);
-// app.use("/api/public", publicRoutes);
-
+app.use("/client/auth", authClient);
+app.use("/client/compagne", compagneClient);
 
 export default app;

@@ -48,10 +48,52 @@ export default class CompagneController {
         res.status(400).json({ message: "Form fields not created" });
         return;
       }
-      res.status(201).json({compagne, form, formFields});
+      res.status(201).json({message: "Compagne created successfully" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
     }
   }
+static async getAllCompagne(req: Request, res: Response): Promise<void> {
+  try {
+    const clientId = req.client?.id;
+    if (!clientId) {
+      res.status(400).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const campagnes = await prisma.compagne.findMany({
+      where: {
+        OR: [
+          {
+            clientId: clientId.toString(), // Owner
+          },
+          {
+            TeamCompagne: {
+              some: {
+                teamMember: {
+                  membreId: clientId.toString(), // Membre
+                },
+              },
+            },
+          },
+        ],
+      },
+      select: {
+        compagneName: true,
+        soumission: true,
+      },
+    });
+
+    const formattedResult = campagnes.map((campagne) => ({
+      compagneName: campagne.compagneName,
+      totalSoumission: campagne.soumission.length,
+    }));
+
+    res.status(200).json(formattedResult);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
 }
