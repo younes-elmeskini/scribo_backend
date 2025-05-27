@@ -92,6 +92,8 @@ static async getAllCompagne(req: Request, res: Response): Promise<void> {
       },
       select: {
         compagneName: true,
+        status:true,
+        favrite:true,
         soumission: true,
         Call: true,
         Email: true,
@@ -103,6 +105,8 @@ static async getAllCompagne(req: Request, res: Response): Promise<void> {
 
     const formattedResult = campagnes.map((campagne) => ({
       compagneName: campagne.compagneName,
+      status: campagne.status,
+      favrite: campagne.favrite,
       soumission: campagne.soumission.length,
       actions:
         campagne.soumission.length +
