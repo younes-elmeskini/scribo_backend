@@ -70,7 +70,7 @@ model TeamCompagne {
   teamMenbreId String
   compagneId   String
   role         Role
-  teammeber    TeamMenber @relation(fields: [teamMenbreId], references: [id])
+  teamMember    TeamMenber @relation(fields: [teamMenbreId], references: [id])
   compagne     Compagne   @relation(fields: [compagneId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
