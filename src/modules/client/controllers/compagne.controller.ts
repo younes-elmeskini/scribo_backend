@@ -18,7 +18,7 @@ export default class CompagneController {
         res.status(400).json({ message: "Unauthorized" });
         return;
       }
-      const fields =  await prisma.fields.findMany({
+      const fields = await prisma.fields.findMany({
         where: {
           id: {
             in: parsedData.fields,
@@ -65,62 +65,130 @@ export default class CompagneController {
       res.status(500).json({ message: "Internal Server Error" });
     }
   }
-static async getAllCompagne(req: Request, res: Response): Promise<void> {
-  try {
-    const clientId = req.client?.id;
-    if (!clientId) {
-      res.status(400).json({ message: "Unauthorized" });
-      return;
-    }
+  static async getAllCompagne(req: Request, res: Response): Promise<void> {
+    try {
+      const clientId = req.client?.id;
+      if (!clientId) {
+        res.status(400).json({ message: "Unauthorized" });
+        return;
+      }
 
-    const campagnes = await prisma.compagne.findMany({
-      where: {
-        OR: [
-          {
-            clientId: clientId.toString(), // Owner
-          },
-          {
-            TeamCompagne: {
-              some: {
-                teamMember: {
-                  membreId: clientId.toString(), // Membre
+      const campagnes = await prisma.compagne.findMany({
+        where: {
+          OR: [
+            {
+              clientId: clientId.toString(), // Owner
+            },
+            {
+              TeamCompagne: {
+                some: {
+                  teamMember: {
+                    membreId: clientId.toString(), // Membre
+                  },
                 },
               },
             },
-          },
-        ],
-      },
-      select: {
-        compagneName: true,
-        status:true,
-        favrite:true,
-        soumission: true,
-        Call: true,
-        Email: true,
-        Notes: true,
-        Task: true,
-        appointment: true,
-      },
-    });
+          ],
+        },
+        select: {
+          id: true,
+          compagneName: true,
+          status: true,
+          favrite: true,
+          soumission: true,
+          Call: true,
+          Email: true,
+          Notes: true,
+          Task: true,
+          appointment: true,
+        },
+      });
 
-    const formattedResult = campagnes.map((campagne) => ({
-      compagneName: campagne.compagneName,
-      status: campagne.status,
-      favrite: campagne.favrite,
-      soumission: campagne.soumission.length,
-      actions:
-        campagne.soumission.length +
-        campagne.Call.length +
-        campagne.Email.length +
-        campagne.Notes.length +
-        campagne.Task.length +
-        campagne.appointment.length,
-    }));
+      const formattedResult = campagnes.map((campagne) => ({
+        id: campagne.id,
+        compagneName: campagne.compagneName,
+        status: campagne.status,
+        favrite: campagne.favrite,
+        soumission: campagne.soumission.length,
+        actions:
+          campagne.soumission.length +
+          campagne.Call.length +
+          campagne.Email.length +
+          campagne.Notes.length +
+          campagne.Task.length +
+          campagne.appointment.length,
+      }));
 
-    res.status(200).json(formattedResult);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+      res.status(200).json(formattedResult);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
   }
-}
+
+  static async getCompagneById(req: Request, res: Response): Promise<void> {
+    try {
+      const compagneId = req.params.id;
+
+      // Get soumissions by date
+      const soumissions = await prisma.soumission.findMany({
+        where: { compagneId },
+        select: { createdAt: true },
+      });
+
+      const soumissionsByDay = soumissions.reduce(
+        (acc: Record<string, number>, submission) => {
+          const date = submission.createdAt.toISOString().split("T")[0];
+          acc[date] = (acc[date] || 0) + 1;
+          return acc;
+        },
+        {}
+      );
+
+      // Get all FormFields with options
+      const formFields = await prisma.formField.findMany({
+        where: {
+          form: {
+            compagneId,
+          },
+          options: {
+            isEmpty: false,
+          },
+        },
+        include: {
+          Answer: true,
+        },
+      });
+
+      const answersStats = formFields.map((field) => {
+        const optionCount = field.options.reduce(
+          (acc: Record<string, number>, option) => {
+            acc[option] = 0;
+            return acc;
+          },
+          {}
+        );
+
+        field.Answer.forEach((answer) => {
+          if (optionCount[answer.valeu] !== undefined) {
+            optionCount[answer.valeu]++;
+          }
+        });
+
+        return {
+          fieldId: field.id,
+          label: field.label,
+          stats: optionCount,
+        };
+      });
+
+      res.status(200).json({
+        soumissionsByDay,
+        answersStats,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
 }
